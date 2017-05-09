@@ -36,11 +36,13 @@ def window(window_name):
 
 
 def main():
-    char_alloved = [' ', 'O', '%', '★']
+    char_alloved = [' ', 'O', '%', '★', '♺']
     x = 5
     y = 26
     os.system("clear")
+    gameplay(x, y, char_alloved)
 
+def gameplay(x, y, char_alloved):
     map_number = 1
     board, x, y = board_after_teleport("maps/map1.txt", x, y)
     while map_number == 1:
@@ -99,17 +101,18 @@ def map1_action(char_alloved, board, x, y):
         move(x, y, "maps/map1.txt")
 
     elif button == 'i':
-        inv = {}
-        import_inventory(inv, 'test_inventory.csv')
+        inv={}
+        inv=import_inventory(inv, 'test_inventory.csv')
         print_table(inv, order=None)
-        # window('inventory.txt')
         sleep(3)
-        board_change('maps.txt', x, y)
+        board_change('maps/map1.txt', x, y)
 
-    if board[y][x] == '%':
-        inv = {}
+    if board[y][x] == '♺':
         dragon_loot = ['alkohol']
-        inv = add_to_inventory(inv, dragon_loot)
+        inv={}
+        inv=import_inventory(inv, 'test_inventory.csv')
+        inv=add_to_inventory(inv, dragon_loot)
+        print (inv)
         export_inventory(inv, 'test_inventory.csv')
 
     if board[y][x] == 'O':
