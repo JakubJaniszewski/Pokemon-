@@ -1,12 +1,8 @@
-from random import randint
 from time import sleep
 import csv
 import os
 import operator
 import random
-from random import randint
-
-
 
 
 def create_board(board_name):
@@ -43,11 +39,13 @@ def window(window_name):
 
 def main():
     os.system("clear")
+    welcome_screen()
+    character, color = character_creation()
+    gameplay()
+
+
+def gameplay():
     char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩']
-    gameplay(char_alloved)
-
-
-def gameplay(char_alloved):
     reset_files()
     x, y = first_level(char_alloved)
     second_level(char_alloved, x, y)
@@ -138,8 +136,7 @@ def get_action(char_alloved, board, x, y, map_file):
         stats = import_file('stats.csv')[1]
         display_inventory(stats)
         print_table(inv, order=None)
-        while getch().lower() != 'i':
-            sleep(0.1)
+        sleep(2.5)
         board_change('maps/map1.txt', x, y)
 
     elif button == "x":
@@ -192,12 +189,11 @@ def map1_action(char_alloved, board, x, y):
     if board[y][x] == ',':
         print('no more ore here')
 
-        #################### F I G H T #######################
+     #################### F I G H T #######################
     if board[y][x] == '⤩':
-        enemy_one=[20,5,5,100]
+        enemy_one = [20, 5, 5, 100]
         enemy_one_attack_strength = int(enemy_one[1]*0.5)
-        enemy_one_attack_random = [enemy_one_attack_strength-1,
-         enemy_one_attack_strength, enemy_one_attack_strength+1]
+        enemy_one_attack_random = [enemy_one_attack_strength-1, enemy_one_attack_strength, enemy_one_attack_strength+1]
         enemy_one_dodge = enemy_one[2]*2
 
         x, y = back(button, x, y)
@@ -206,11 +202,11 @@ def map1_action(char_alloved, board, x, y):
         display_inventory(stats)
 
         while enemy_one[0] > 0:
-            choice=input('1 : Attac | 2: Run \n')
+            choice = input('1 : Attac | 2: Run \n')
             while not (choice == '1' or choice == '2'):
                 window('action.txt')
                 display_inventory(stats)
-                choice=input('1 : Attac | 2: Run')
+                choice = input('1 : Attac | 2: Run')
 
             if choice == '2':
                 board_change('maps/map1.txt', x, y)
@@ -218,17 +214,9 @@ def map1_action(char_alloved, board, x, y):
 
             if choice == '1':
                 attack_strength = int(stats['Strength']*0.5)
-                attack_random  = [attack_strength-1, attack_strength, attack_strength+1]
-                if
-                enemy_one[0]=enemy_one[0]-random.choice(attack_random)
-                print (bgc[0])
-
-
-
-        #first_level(char_alloved, x, y)
-        print (bgc[0])
-
-
+                attack_random = [attack_strength-1, attack_strength, attack_strength+1]
+                enemy_one[0] = enemy_one[0]-random.choice(attack_random)
+                print(enemy_one[0])
 
     if board[y][x] == "★":
         return 2, x, y
@@ -239,6 +227,35 @@ def map1_action(char_alloved, board, x, y):
 def map2_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map2.txt")
+
+    #################### F I G H T #######################
+    if board[y][x] == '⤩':
+        enemy_one = [20, 5, 5, 100]
+        enemy_one_attack_strength = int(enemy_one[1]*0.5)
+        enemy_one_attack_random = [enemy_one_attack_strength-1, enemy_one_attack_strength, enemy_one_attack_strength+1]
+        enemy_one_dodge = enemy_one[2]*2
+
+        x, y = back(button, x, y)
+        window('action.txt')
+        stats = import_file('stats.csv')[1]
+        display_inventory(stats)
+
+        while enemy_one[0] > 0:
+            choice = input('1 : Attac | 2: Run \n')
+            while not (choice == '1' or choice == '2'):
+                window('action.txt')
+                display_inventory(stats)
+                choice = input('1 : Attac | 2: Run')
+
+            if choice == '2':
+                board_change('maps/map2.txt', x, y)
+                break
+
+            if choice == '1':
+                attack_strength = int(stats['Strength']*0.5)
+                attack_random = [attack_strength-1, attack_strength, attack_strength+1]
+                enemy_one[0] = enemy_one[0]-random.choice(attack_random)
+                print(enemy_one[0])
 
     if board[y][x] == "★":
         return 3, x, y
@@ -373,6 +390,89 @@ def display_inventory(inventory):
     print('\n')
 
 
+def display_screen(filename):
+    os.system("clear")
+    with open(filename, "r") as f:
+        screen = f.read()
+    print(screen)
+
+
+def welcome_screen():
+    button = ""
+    while not button == "s":
+        display_screen("screens/Welcome.txt")
+        button = getch()
+        if button == "h":
+            help_screen()
+        if button == "c":
+            credits_screen()
+        if button == "x":
+            os.system("clear")
+            quit()
+
+
+def credits_screen():
+    button = ""
+    while not button == "x":
+        display_screen("screens/Credits.txt")
+        button = getch()
+
+
+def help_screen():
+    button = ""
+    while not button == "x":
+        display_screen("screens/Help.txt")
+        button = getch()
+
+
+def character_creation():
+    button = ""
+    allowed_to_press = ["1", "2", "3", "4", "5"]
+    while button not in allowed_to_press:
+        display_screen("screens/Character_creation1.txt")
+        button = getch()
+
+    character = get_character(button)
+    button = ""
+
+    while button not in allowed_to_press:
+        display_screen("screens/Character_creation2.txt")
+        button = getch()
+
+    color = get_color(button)
+
+    return character, color
+
+
+def get_character(button):
+    if button == "1":
+        character = "@"
+    if button == "2":
+        character = "⛹"
+    if button == "3":
+        character = "§"
+    if button == "4":
+        character = "ᾥ"
+    if button == "5":
+        character = "⛄"
+
+    return character
+
+
+def get_color(button):
+    if button == "1":
+        color = "blue"
+    if button == "2":
+        color = "yellow"
+    if button == "3":
+        color = "green"
+    if button == "4":
+        color = "red"
+    if button == "5":
+        color = "white"
+
+    return color
+
 ##########################################
 def getch():
     import sys
@@ -385,7 +485,7 @@ def getch():
         ch = sys.stdin.read(1)
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return ch
+    return ch.lower()
 
 
 if __name__ == "__main__":
