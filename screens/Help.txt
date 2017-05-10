@@ -1,0 +1,23 @@
+							  #    #              
+							  #   #  ###### #   # 
+							  #  #   #       # #  
+							  ###    #####    #   
+						  	  #  #   #        #   
+							  #   #  #        #   
+							  #    # ######   #   
+								    
+											      
+						#####  # #    # #####  # #    #  ####   ####  
+						#    # # ##   # #    # # ##   # #    # #      
+						#####  # # #  # #    # # # #  # #       ####  
+						#    # # #  # # #    # # #  # # #  ###      # 
+						#    # # #   ## #    # # #   ## #    # #    # 
+						#####  # #    # #####  # #    #  ####   ####  
+
+
+						W, S, A, D - press one of these keys to move
+						I - press to check your inventory
+						X - press to exit anytime during the game
+
+
+						    Press X to return to the main menu

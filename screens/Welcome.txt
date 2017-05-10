@@ -1,0 +1,25 @@
+
+				##      ## ######## ##        ######   #######  ##     ## ######## 
+				##  ##  ## ##       ##       ##    ## ##     ## ###   ### ##       
+				##  ##  ## ##       ##       ##       ##     ## #### #### ##       
+				##  ##  ## ######   ##       ##       ##     ## ## ### ## ######   
+				##  ##  ## ##       ##       ##       ##     ## ##     ## ##       
+				##  ##  ## ##       ##       ##    ## ##     ## ##     ## ##       
+				 ###  ###  ######## ########  ######   #######  ##     ## ########
+
+
+				  You have been kicked from your kingdom by your cruel brother.
+				But after 4 years you have returned, to prove you are the real king 
+							of this country.
+
+				  To make your way to the palace, you have to get through the suburbs,
+						facing the difficulties of a beggar.
+
+
+
+						      Press 'S' to begin.
+						      Press 'H' for help.
+						     Press 'C' for credits.
+						     
+
+						      Press 'X' to exit.
