@@ -3,6 +3,10 @@ from time import sleep
 import csv
 import os
 import operator
+import random
+from random import randint
+
+
 
 
 def create_board(board_name):
@@ -39,7 +43,7 @@ def window(window_name):
 
 def main():
     os.system("clear")
-    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',']
+    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩']
     gameplay(char_alloved)
 
 
@@ -134,7 +138,8 @@ def get_action(char_alloved, board, x, y, map_file):
         stats = import_file('stats.csv')[1]
         display_inventory(stats)
         print_table(inv, order=None)
-        sleep(2.5)
+        while getch().lower() != 'i':
+            sleep(0.1)
         board_change('maps/map1.txt', x, y)
 
     elif button == "x":
@@ -186,6 +191,44 @@ def map1_action(char_alloved, board, x, y):
 
     if board[y][x] == ',':
         print('no more ore here')
+
+        #################### F I G H T #######################
+    if board[y][x] == '⤩':
+        enemy_one=[20,5,5,100]
+        enemy_one_attack_strength = int(enemy_one[1]*0.5)
+        enemy_one_attack_random = [enemy_one_attack_strength-1,
+         enemy_one_attack_strength, enemy_one_attack_strength+1]
+        enemy_one_dodge = enemy_one[2]*2
+
+        x, y = back(button, x, y)
+        window('action.txt')
+        stats = import_file('stats.csv')[1]
+        display_inventory(stats)
+
+        while enemy_one[0] > 0:
+            choice=input('1 : Attac | 2: Run \n')
+            while not (choice == '1' or choice == '2'):
+                window('action.txt')
+                display_inventory(stats)
+                choice=input('1 : Attac | 2: Run')
+
+            if choice == '2':
+                board_change('maps/map1.txt', x, y)
+                break
+
+            if choice == '1':
+                attack_strength = int(stats['Strength']*0.5)
+                attack_random  = [attack_strength-1, attack_strength, attack_strength+1]
+                if
+                enemy_one[0]=enemy_one[0]-random.choice(attack_random)
+                print (bgc[0])
+
+
+
+        #first_level(char_alloved, x, y)
+        print (bgc[0])
+
+
 
     if board[y][x] == "★":
         return 2, x, y
@@ -284,7 +327,7 @@ def export_file(inventory, filename="export_inventory.csv"):
 
 def import_file(filename="import_inventory.csv"):
     inventory = {"wooden stick": 1}
-    stats = {"Health": 40, "Strenght": 10, "Agility": 10}
+    stats = {"Health": 40, "Strength": 10, "Agility": 10}
     with open(filename, newline='') as csvfile:
         inv_csv = csv.reader(csvfile, delimiter=',',
                              quotechar='|', quoting=csv.QUOTE_MINIMAL)
