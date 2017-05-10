@@ -36,7 +36,11 @@ def window(window_name):
 
 
 def main():
-    char_alloved = [' ', 'O', '%', '★', '♺']
+    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',']
+    inv={'wooden stick':1}
+    export_inventory(inv, 'test_inventory.csv')
+    stats={'Health':40, 'Strength':10, 'Aglity':10}
+    export_inventory(stats, 'stats.csv')
     x = 5
     y = 26
     os.system("clear")
@@ -74,6 +78,8 @@ def board_after_teleport(board_name, x, y):
 
 
 def map1_action(char_alloved, board, x, y):
+    inv={}
+    stats={}
     print(x, y)
     button = getch()
     if button == 'w':
@@ -101,19 +107,61 @@ def map1_action(char_alloved, board, x, y):
         move(x, y, "maps/map1.txt")
 
     elif button == 'i':
-        inv={}
         inv=import_inventory(inv, 'test_inventory.csv')
+        stats=import_inventory(stats, 'stats.csv')
+        display_inventory(stats)
         print_table(inv, order=None)
-        sleep(3)
+        sleep(2.5)
         board_change('maps/map1.txt', x, y)
 
     if board[y][x] == '♺':
-        dragon_loot = ['alkohol']
-        inv={}
         inv=import_inventory(inv, 'test_inventory.csv')
-        inv=add_to_inventory(inv, dragon_loot)
+        if 'pickaxe' not in inv:
+            print ('need pickaxe')
+
+        elif 'pickaxe' in inv or 'sword' in inv:
+            iron_ore = ['iron ore']
+            inv=add_to_inventory(inv, iron_ore)
+            export_inventory(inv, 'test_inventory.csv')
+            board[y][x]=','
         print (inv)
-        export_inventory(inv, 'test_inventory.csv')
+
+    if board[y][x] == ',':
+        print ('no more ore here')
+
+
+
+    #   smith quest
+    if board[y][x] == '⚗':
+        x, y = back(button, x, y)
+        inv=import_inventory(inv, 'test_inventory.csv')
+
+        if 'pickaxe' not in inv  and 'sword' not in inv:
+            print('I have a quest for you \n i need 5 iron ores')
+            sleep(1)
+            pickaxe=['pickaxe']
+            inv=add_to_inventory(inv, pickaxe)
+            export_inventory(inv, 'test_inventory.csv')
+
+        elif 'pickaxe'in inv and 'iron ore' not in inv:
+            print ('go hurry!')
+
+        elif 'pickaxe'in inv and inv['iron ore'] < 5:
+            print ('you need 5!')
+
+        elif 'pickaxe' in inv and inv['iron ore'] == 5:
+            print ('good job')
+            del inv['iron ore']
+            del inv['pickaxe']
+            sword=['sword']
+            inv=add_to_inventory(inv, sword)
+            export_inventory(inv, 'test_inventory.csv')
+
+        elif 'sword' in inv:
+            print ('good luck')
+
+
+
 
     if board[y][x] == 'O':
         x, y = back(button, x, y)
@@ -391,6 +439,16 @@ def add_to_inventory(inventory, added_items):
     return inventory
 
 
+def display_inventory(inventory):
+    import operator
+    sum=0
+    for key,value in sorted(inventory.items(), key=operator.itemgetter(1), reverse=True):
+        sum+=value
+        print (key, ':', value, end=' | ')
+    print('\n')
+
+
+
 def export_inventory(inventory, filename="export_inventory.csv"):
     import csv
     item_list = []
@@ -434,7 +492,7 @@ def print_table(inventory, order=None):
     longest_value = (max(values, key=len))
     longest_value_len = len(longest_value)
 
-    print('Inventory:')
+    print('INVENTORY:')
     print('  count    ' + ' ' * (longest_key_len - 9) + 'item name')
     print('-' * 11 + '-' * longest_key_len)
 
