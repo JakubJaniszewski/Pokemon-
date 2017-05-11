@@ -70,7 +70,7 @@ def main():
 
 
 def gameplay():
-    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&']
+    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&', '#', '~', '⍑','(',')','⯂','x']
     reset_files()
     x, y = first_level(char_alloved)
     second_level(char_alloved, x, y)
@@ -178,6 +178,8 @@ def map1_action(char_alloved, board, x, y):
     stats = import_stats('stats.csv')
     level_up(stats['Exp'], stats['Level'])
 
+
+
     if board[y][x] == '♺':
         if 'pickaxe' not in inv:
             print('need pickaxe')
@@ -195,7 +197,7 @@ def map1_action(char_alloved, board, x, y):
             print('I have a quest for you \n i need 5 iron ores')
             sleep(1)
             pickaxe = ['pickaxe']
-            inv = add_to_inventory(inv, pickaxe)
+            add_to_inventory(inv, pickaxe)
 
         elif 'pickaxe'in inv and 'iron ore' not in inv:
             print('go hurry!')
@@ -208,7 +210,7 @@ def map1_action(char_alloved, board, x, y):
             del inv['iron ore']
             del inv['pickaxe']
             sword = ['sword']
-            inv = add_to_inventory(inv, sword)
+            add_to_inventory(inv, sword)
             add_to_stats(stats, 0, 0, 2, 0, 40, 0)
 
         elif 'sword' in inv:
@@ -223,14 +225,17 @@ def map1_action(char_alloved, board, x, y):
         board_change('maps/map1.txt', x, y)
         print('enemy is dead \n plus 20XP')
 
-    if board[y][x] == '&':
-        x, y = back(button, x, y)
+    if board[y][x] == '(' or board[y][x] == ')':
         stats['Health'] = stats['Max health']
         add_to_stats(stats, 0, 0, 0, 0, 0, 0)
         print('Full heal')
-        sleep(0.5)
+        sleep(0.2)
 
-    if board[y][x] == "★":
+    if board[y][x] == '&':
+        x, y = back(button, x, y)
+        print('w ktróleswie znajdują się lecznicze źródła \n jedno z nich jest za mną, sprawdz sam')
+
+    if 'sword' in inv:
         return 2, x, y
     else:
         return 1, x, y
@@ -238,16 +243,29 @@ def map1_action(char_alloved, board, x, y):
 
 def map2_action(char_alloved, board, x, y):
     print(x, y)
+    board, x, y, button = get_action(char_alloved, board, x, y, "maps/map2.txt")
     inv = import_inventory('test_inventory.csv')
     stats = import_stats('stats.csv')
     level_up(stats['Exp'], stats['Level'])
-    board, x, y, button = get_action(char_alloved, board, x, y, "maps/map2.txt")
 
     if board[y][x] == '⤩':
         x, y = back(button, x, y)
-        fight(85, 85, 15, 15, 20, x, y)
+        print('stój kurwa!')
+        sleep(1)
+        fight(25, 25, 5, 5, 20, x, y)
         board_change('maps/map2.txt', x, y)
         print('enemy is dead \n plus 20XP')
+
+    if board[y][x] == '⚗':
+        x, y = back(button, x, y)
+        board_change('maps/map2.txt', x, y)
+        print('good luck')
+
+    if board[y][x] == '(' or board[y][x] == ')':
+        stats['Health'] = stats['Max health']
+        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
+        print('Full heal')
+        sleep(0.2)
 
     if board[y][x] == "★":
         return 3, x, y
@@ -258,6 +276,76 @@ def map2_action(char_alloved, board, x, y):
 def map3_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map3.txt")
+    inv = import_inventory('test_inventory.csv')
+    stats = import_stats('stats.csv')
+    level_up(stats['Exp'], stats['Level'])
+
+    board[19][10] = '~'
+    board[25][13] = '~'
+    board[24][17] = '~'
+    board[22][19] = '~'
+    board[25][22] = '~'
+
+    if board[y][x] == '~':
+        if 'bucket' in inv or 'robe' in inv:
+            material = ['material']
+            print('you get material')
+            sleep(0.5)
+            add_to_inventory(inv, material)
+            board[y][x] = ','
+
+    if board[y][x] == '⚗':
+        x, y = back(button, x, y)
+        board_change('maps/map3.txt', x, y)
+
+        if 'bucket' not in inv and 'robe' not in inv:
+            print('I have a quest for you \n i need 5 materials')
+            sleep(1)
+            bucket = ['bucket']
+            inv = add_to_inventory(inv, bucket)
+
+        elif 'bucket'in inv and 'material' not in inv:
+            print('pole baweły jest na zachodzie')
+
+        elif 'bucket'in inv and inv['material'] < 5:
+            print('za mało')
+
+        elif 'bucket' in inv and inv['material'] == 5:
+            print('udało ci się')
+            del inv['material']
+            del inv['bucket']
+            robe = ['robe']
+            inv = add_to_inventory(inv, robe)
+            add_to_stats(stats, 0, 10, 0, 2, 80, 0)
+
+        elif 'robe' in inv:
+            print('idz i odzyskaj tron')
+
+    if board[y][x] == '⤩':
+        x, y = back(button, x, y)
+        board_change('maps/map3.txt', x, y)
+        print ('dawaj leszczu')
+        sleep(1)
+        fight(50, 50, 10, 10, 40, x, y)
+        board_change('maps/map3.txt', x, y)
+        print('enemy is dead \n plus 40XP')
+
+    if board[y][x] == '⍑':
+        x, y = back(button, x, y)
+        board_change('maps/map3.txt', x, y)
+        print('FIGHT CLUB')
+
+    if board[y][x] == '⯂':
+        x, y = back(button, x, y)
+        board_change('maps/map3.txt', x, y)
+        print('czego tu szukasz wieśniaku? ... wypierdalaj')
+        sleep(1)
+
+    if board[y][x] == 'x':
+        x, y = back(button, x, y)
+        board_change('maps/map3.txt', x, y)
+        print('czego tu szukasz wieśniaku? ... wypierdalaj')
+        sleep(1)
 
     if board[y][x] == "★":
         return 4, x, y
@@ -268,6 +356,9 @@ def map3_action(char_alloved, board, x, y):
 def map4_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map4.txt")
+    inv = import_inventory('test_inventory.csv')
+    stats = import_stats('stats.csv')
+    level_up(stats['Exp'], stats['Level'])
 
     if board[y][x] == "★":
         return 5, x, y
@@ -545,7 +636,6 @@ def character_creation():
     with open("chosen_character.csv", 'w', newline='') as f:
         writer = csv.writer(f, delimiter=",", quotechar=",", quoting=csv.QUOTE_MINIMAL)
         writer.writerow(choices_list)
-
 
 
 
