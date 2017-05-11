@@ -6,9 +6,6 @@ import operator
 import random
 
 
-
-
-
 def create_board(board_name):
     with open(board_name, "r") as maps:
         maps = maps.readlines()
@@ -44,6 +41,8 @@ def window(window_name):
 def main():
     os.system("clear")
     char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&']
+    welcome_screen()
+    character_creation()
     gameplay(char_alloved)
 
 
@@ -59,7 +58,7 @@ def gameplay(char_alloved):
 def reset_files():
     inv = {'wooden stick': 1}
     export_file(inv, 'test_inventory.csv')
-    stats = {"Health": 40, "Max health":40, "Strength": 10, "Agility": 10, "Exp": 0, "Level": 1}
+    stats = {"Health": 40, "Max health": 40, "Strength": 10, "Agility": 10, "Exp": 0, "Level": 1}
     export_file(stats, 'stats.csv')
 
 
@@ -155,7 +154,6 @@ def map1_action(char_alloved, board, x, y):
     stats = import_stats('stats.csv')
     level_up(stats['Exp'], stats['Level'])
 
-
     if board[y][x] == '♺':
         if 'pickaxe' not in inv:
             print('need pickaxe')
@@ -199,7 +197,7 @@ def map1_action(char_alloved, board, x, y):
         x, y = back(button, x, y)
         fight(85, 85, 15, 15, 20, x, y)
         board_change('maps/map1.txt', x, y)
-        print ('enemy is dead \n plus 20XP')
+        print('enemy is dead \n plus 20XP')
 
     if board[y][x] == '&':
         x, y = back(button, x, y)
@@ -216,7 +214,16 @@ def map1_action(char_alloved, board, x, y):
 
 def map2_action(char_alloved, board, x, y):
     print(x, y)
+    inv = import_inventory('test_inventory.csv')
+    stats = import_stats('stats.csv')
+    level_up(stats['Exp'], stats['Level'])
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map2.txt")
+
+    if board[y][x] == '⤩':
+        x, y = back(button, x, y)
+        fight(85, 85, 15, 15, 20, x, y)
+        board_change('maps/map2.txt', x, y)
+        print('enemy is dead \n plus 20XP')
 
     if board[y][x] == "★":
         return 3, x, y
@@ -275,48 +282,47 @@ def fight(health, max_health, strength, agility, exp, x, y):
     stats = import_stats('stats.csv')
     display_health(stats['Health'], stats['Max health'])
 
-    enemy_attack_strength = int(strength*0.5)
-    enemy_attack_random = [enemy_attack_strength-1, enemy_attack_strength, enemy_attack_strength+1]
-    enemy_dodge_chance = agility*2
+    enemy_attack_strength = int(strength * 0.5)
+    enemy_attack_random = [enemy_attack_strength - 1, enemy_attack_strength, enemy_attack_strength + 1]
+    enemy_dodge_chance = agility * 2
 
-    player_attack_strength = int(stats['Strength']*0.5)
-    player_attack_random  = [player_attack_strength-1, player_attack_strength, player_attack_strength+1]
-    plaer_dodge_chance = int(stats['Agility']*0.5)
+    player_attack_strength = int(stats['Strength'] * 0.5)
+    player_attack_random = [player_attack_strength - 1, player_attack_strength, player_attack_strength + 1]
+    plaer_dodge_chance = int(stats['Agility'] * 0.5)
 
     while health > 0:
         window('action.txt')
-        print('Player :', end= '-')
+        print('Player :', end='-')
         display_health(stats['Health'], stats['Max health'])
-        print('Enemy :', end= '--')
+        print('Enemy :', end='--')
         display_health(health, max_health)
 
-
-        choice=input('1 : Attac | 2: Run \n')
+        choice = input('1 : Attac | 2: Run \n')
         while not (choice == '1' or choice == '2'):
             window('action.txt')
-            print('Player :', end= '-')
+            print('Player :', end='-')
             display_health(stats['Health'], stats['Max health'])
-            print('Enemy :', end= '--')
+            print('Enemy :', end='--')
             display_health(health, max_health)
-            choice=input('1 : Attac | 2: Run \n')
+            choice = input('1 : Attac | 2: Run \n')
 
         if choice == '2':
             board_change('maps/map1.txt', x, y)
             break
 
         if choice == '1':
-            dodge = randint(0,99)
-            print (dodge)
+            dodge = randint(0, 99)
+            print(dodge)
             sleep(0.5)
             if dodge <= enemy_dodge_chance:
-                print ('you miss')
+                print('you miss')
                 sleep(0.5)
             else:
-                health=health-random.choice(player_attack_random)
+                health = health - random.choice(player_attack_random)
 
-            dodge = randint(0,99)
+            dodge = randint(0, 99)
             if dodge <= plaer_dodge_chance:
-                print ('dodge')
+                print('dodge')
                 sleep(0.5)
             else:
                 stats['Health'] = stats['Health'] - random.choice(enemy_attack_random)
@@ -330,7 +336,6 @@ def fight(health, max_health, strength, agility, exp, x, y):
         add_to_stats(stats, 0, 0, 0, 0, exp, 0)
     else:
         add_to_stats(stats, 0, 0, 0, 0, 0, 0)
-
 
 
 def move(x, y, board_name="maps/map1.txt"):
@@ -371,12 +376,12 @@ def add_to_inventory(inventory, added_items):
 
 
 def add_to_stats(stat, health, max_health, strength, agility, exp, level):
-    stat['Health']+=health
-    stat['Max health']+=max_health
-    stat['Strength']+=strength
-    stat['Agility']+=agility
-    stat['Exp']+=exp
-    stat['Level']+=level
+    stat['Health'] += health
+    stat['Max health'] += max_health
+    stat['Strength'] += strength
+    stat['Agility'] += agility
+    stat['Exp'] += exp
+    stat['Level'] += level
     export_file(stat, 'stats.csv')
 
 
@@ -411,7 +416,7 @@ def import_inventory(filename="import_inventory.csv"):
 
 
 def import_stats(filename="stats.csv"):
-    stats = {"Health": 40, "Max health":40, "Strength": 10, "Agility": 10, "Exp": 0, "Level": 1}
+    stats = {"Health": 40, "Max health": 40, "Strength": 10, "Agility": 10, "Exp": 0, "Level": 1}
 
     with open(filename, newline='') as csvfile:
         inv_csv = csv.reader(csvfile, delimiter=',',
@@ -452,16 +457,101 @@ def print_table(inventory, order=None):
 
 def display_stats(stat):
     print('Health :', stat['Health'], '/', stat['Max health'], end=' | ')
-    print ('Strength :', stat['Strength'],' | ', 'Agility :',
-    stat['Agility'],' | ', 'Exp :', stat['Exp'], ' | ', 'Level :', stat['Level'])
+    print('Strength :', stat['Strength'], ' | ', 'Agility :',
+          stat['Agility'], ' | ', 'Exp :', stat['Exp'], ' | ', 'Level :', stat['Level'])
     print('\n')
+
 
 def display_health(health, max_health):
     print('Health :', health, '/', max_health)
 
 
+def display_screen(filename):
+    os.system("clear")
+    with open(filename, "r") as f:
+        screen = f.read()
+    print(screen)
+
+
+def welcome_screen():
+    button = ""
+    while not button == "s":
+        display_screen("screens/Welcome.txt")
+        button = getch()
+        if button == "h":
+            help_screen()
+        if button == "c":
+            credits_screen()
+        if button == "x":
+            os.system("clear")
+            quit()
+
+
+def credits_screen():
+    button = ""
+    while not button == "x":
+        display_screen("screens/Credits.txt")
+        button = getch()
+
+
+def help_screen():
+    button = ""
+    while not button == "x":
+        display_screen("screens/Help.txt")
+        button = getch()
+
+
+def character_creation():
+    button = ""
+    allowed_to_press = ["1", "2", "3", "4", "5"]
+    while button not in allowed_to_press:
+        display_screen("screens/Character_creation1.txt")
+        button = getch()
+
+    character = get_character(button)
+    button = ""
+
+    while button not in allowed_to_press:
+        display_screen("screens/Character_creation2.txt")
+        button = getch()
+
+    color = get_color(button)
+
+    return character, color
+
+
+def get_character(button):
+    if button == "1":
+        character = "@"
+    if button == "2":
+        character = "⛹"
+    if button == "3":
+        character = "§"
+    if button == "4":
+        character = "ᾥ"
+    if button == "5":
+        character = "⛄"
+
+    return character
+
+
+def get_color(button):
+    if button == "1":
+        color = "blue"
+    if button == "2":
+        color = "yellow"
+    if button == "3":
+        color = "green"
+    if button == "4":
+        color = "red"
+    if button == "5":
+        color = "white"
+
+    return color
 
 ##########################################
+
+
 def getch():
     import sys
     import tty
