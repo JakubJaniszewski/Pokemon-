@@ -21,8 +21,32 @@ def print_board(board):
 
 
 def insert_player(board, width, height):
-    board[height][width] = '@'
+    with open("chosen_character.csv", "r") as f:
+        f = f.read()
+        chosen_character = f.split(",")
+        chosen_character[-1] = chosen_character[-1].replace("\n", "")
+
+    character = chosen_character[0]
+    color = chosen_character[1]
+    color = change_color(color)
+    off = "\033[0;0m"
+
+    board[height][width] = color + character + off
     return board
+
+
+def change_color(color):
+    if color == "yellow":
+        color = "\033[1;33m"
+    if color == "blue":
+        color = "\033[1;34m"
+    if color == "red":
+        color = "\033[1;31m"
+    if color == "green":
+        color = "\033[0;32m"
+    if color == "white":
+        color = "\033[0;0m"
+    return color
 
 
 def board_change(board_name, x, y):
@@ -40,13 +64,13 @@ def window(window_name):
 
 def main():
     os.system("clear")
-    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&']
     welcome_screen()
     character_creation()
-    gameplay(char_alloved)
+    gameplay()
 
 
-def gameplay(char_alloved):
+def gameplay():
+    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&']
     reset_files()
     x, y = first_level(char_alloved)
     second_level(char_alloved, x, y)
@@ -139,7 +163,7 @@ def get_action(char_alloved, board, x, y, map_file):
         print_table(inv, order=None)
         while getch().lower() != 'i':
             sleep(0.1)
-        board_change('maps/map1.txt', x, y)
+        board_change(map_file, x, y)
 
     elif button == "x":
         quit()
@@ -517,7 +541,12 @@ def character_creation():
 
     color = get_color(button)
 
-    return character, color
+    choices_list = [character, color]
+    with open("chosen_character.csv", 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=",", quotechar=",", quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(choices_list)
+
+
 
 
 def get_character(button):
