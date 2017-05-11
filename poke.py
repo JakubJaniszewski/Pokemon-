@@ -4,6 +4,7 @@ import csv
 import os
 import operator
 import random
+import hot_and_cold
 
 
 def create_board(board_name):
@@ -70,7 +71,7 @@ def main():
 
 
 def gameplay():
-    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&', '#', '~', '⍑','(',')','⯂','x']
+    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&', '#', '~', '⍑','(',')','⯂','x', "♕"]
     reset_files()
     x, y = first_level(char_alloved)
     second_level(char_alloved, x, y)
@@ -80,7 +81,7 @@ def gameplay():
 
 
 def reset_files():
-    inv = {'wooden stick': 1}
+    inv = {'wooden stick': 1, 'sword': 1, 'robe': 1, 'permit': 1}
     export_file(inv, 'test_inventory.csv')
     stats = {"Health": 40, "Max health": 40, "Strength": 10, "Agility": 10, "Exp": 0, "Level": 1}
     export_file(stats, 'stats.csv')
@@ -448,6 +449,12 @@ def map4_action(char_alloved, board, x, y):
             print('król czeka')
             sleep(0.5)
 
+    if board[y][x] == '(' or board[y][x] == ')':
+        stats['Health'] = stats['Max health']
+        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
+        print('Full heal')
+        sleep(0.2)
+
     if board[y][x] == "★":
         return 5, x, y
     else:
@@ -458,6 +465,8 @@ def map5_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map5.txt")
 
+    if board[y][x] == "♕":
+        hot_and_cold.main()
     if board[y][x] == "★":
         return 6, x, y
     else:
@@ -601,7 +610,7 @@ def export_file(inventory, filename="export_inventory.csv"):
 
 
 def import_inventory(filename="import_inventory.csv"):
-    inventory = {"wooden stick": 1}
+    inventory = {"wooden stick": 1, 'sword': 1, 'robe': 1, 'permit': 1}
 
     with open(filename, newline='') as csvfile:
         inv_csv = csv.reader(csvfile, delimiter=',',
