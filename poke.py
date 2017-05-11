@@ -104,6 +104,11 @@ def second_level(char_alloved, x, y):
 def third_level(char_alloved):
     board, x, y = new_board("maps/map3.txt", 2, 3)
     map_number = 3
+    cord_x = [10, 13, 17, 25, 22]
+    cord_y = [16, 25, 24, 19, 25]
+    for i in range(5):
+        board[cord_y[i]][cord_x[i]] = '~'
+
     while map_number == 3:
         map_number, x, y = map3_action(char_alloved, board, x, y)
 
@@ -280,18 +285,12 @@ def map3_action(char_alloved, board, x, y):
     stats = import_stats('stats.csv')
     level_up(stats['Exp'], stats['Level'])
 
-    board[16][10] = '~'
-    board[25][13] = '~'
-    board[24][17] = '~'
-    board[19][25] = '~'
-    board[25][22] = '~'
 
     if board[y][x] == '~':
-        if 'bucket' in inv or 'robe' in inv:
+        if 'bucket' in inv:
             material = ['material']
-            print('you get material')
-            sleep(0.5)
             add_to_inventory(inv, material)
+            print('+1 material')
             board[y][x] = ','
 
     if board[y][x] == '⚗':
@@ -336,16 +335,31 @@ def map3_action(char_alloved, board, x, y):
         print('FIGHT CLUB')
 
     if board[y][x] == '⯂':
-        x, y = back(button, x, y)
-        board_change('maps/map3.txt', x, y)
-        print('czego tu szukasz wieśniaku? ... wypierdalaj')
-        sleep(1)
+        if 'robe' not in inv:
+            x, y = back(button, x, y)
+            board_change('maps/map3.txt', x, y)
+            print('czego tu szukasz wieśniaku? ... wypierdalaj')
+            sleep(0.5)
+        elif 'robe' in inv:
+            print('zapraszam dostojny panie')
+            board[y][x] = " "
+            sleep(0.5)
 
     if board[y][x] == 'x':
-        x, y = back(button, x, y)
-        board_change('maps/map3.txt', x, y)
-        print('czego tu szukasz wieśniaku? ... wypierdalaj')
-        sleep(1)
+        if "robe" not in inv:
+            x, y = back(button, x, y)
+            board_change('maps/map3.txt', x, y)
+            print('czego tu szukasz wieśniaku? ... wypierdalaj')
+            sleep(0.5)
+        elif "robe" in inv:
+            board[y][x] = " "
+
+    if board[y][x] == '(' or board[y][x] == ')':
+        stats['Health'] = stats['Max health']
+        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
+        print('Full heal')
+        sleep(0.2)
+
 
     if board[y][x] == "★":
         return 4, x, y
@@ -359,6 +373,80 @@ def map4_action(char_alloved, board, x, y):
     inv = import_inventory('test_inventory.csv')
     stats = import_stats('stats.csv')
     level_up(stats['Exp'], stats['Level'])
+
+    if board[y][x] == '⚗':
+        x, y = back(button, x, y)
+        board_change('maps/map4.txt', x, y)
+
+        if 'coin' not in inv and 'permit' not in inv:
+            print('''Jestem gueratorem i mam glejt \n jeżeli oswobodzisz przedmieścia z rąk
+            bandytów to oddam ci mój glejt \n jako dowód prznieś mi ich głowy \n
+            tu masz trochę monet na zachęte''')
+            sleep(1)
+            coin = ['coin']*120
+            add_to_inventory(inv, coin)
+
+        elif 'coin'in inv and 'bandit head' not in inv:
+            print('tam giną ludzie, spiesz się')
+
+        elif 'coin'in inv and inv['bandit head'] < 6:
+            print('to nie wszscy, tam wciąż są bandyci')
+
+        elif 'coin' in inv and inv['bandit head'] == 6:
+            print('oswobodziłeś lud, ale glejt będzie cię kosztował 120 monet')
+            del inv['bandit head']
+            del inv['coin']
+            permit = ['permit']
+            add_to_inventory(inv, permit)
+            add_to_stats(stats, 0, 0, 0, 0, 250, 0)
+
+    if board[y][x] == '⤩':
+        if 'coin' in inv:
+            x, y = back(button, x, y)
+            board_change('maps/map4.txt', x, y)
+            print ('zajebie cie!!')
+            sleep(1)
+
+            exp_before = stats['Exp']
+            fight(80, 80, 15, 15, 75, x, y)
+            board_change('maps/map4.txt', x, y)
+            exp_after = stats['Exp']
+
+            if exp_before - exp_after != 0:
+                print('enemy is dead \n plus 75XP')
+                bandit_head = ['bandit hea']
+                add_to_inventory(inv, bandit_head)
+                print('+1 bandit_head')
+                sleep(0.5)
+                board[y][x] = ','
+
+    if board[y][x] == ',':
+        x, y = back(button, x, y)
+        board_change('maps/map4.txt', x, y)
+        print('dead body')
+        sleep(0.5)
+
+    if board[y][x] == '⯂':
+        if 'permit' not in inv:
+            x, y = back(button, x, y)
+            board_change('maps/map4.txt', x, y)
+            print('bez okazania glejtu nikt nie przejdziesz')
+            sleep(0.5)
+        elif 'permit' in inv:
+            board[y][x] = " "
+            print('król czeka')
+            sleep(0.5)
+
+    if board[y][x] == 'x':
+        if "permit" not in inv:
+            x, y = back(button, x, y)
+            board_change('maps/map4.txt', x, y)
+            print('bez okazania glejtu nikt nie przejdziesz')
+            sleep(0.5)
+        elif "permit" in inv:
+            board[y][x] = " "
+            print('król czeka')
+            sleep(0.5)
 
     if board[y][x] == "★":
         return 5, x, y
