@@ -280,10 +280,10 @@ def map3_action(char_alloved, board, x, y):
     stats = import_stats('stats.csv')
     level_up(stats['Exp'], stats['Level'])
 
-    board[19][10] = '~'
+    board[16][10] = '~'
     board[25][13] = '~'
     board[24][17] = '~'
-    board[22][19] = '~'
+    board[19][25] = '~'
     board[25][22] = '~'
 
     if board[y][x] == '~':
@@ -302,7 +302,7 @@ def map3_action(char_alloved, board, x, y):
             print('I have a quest for you \n i need 5 materials')
             sleep(1)
             bucket = ['bucket']
-            inv = add_to_inventory(inv, bucket)
+            add_to_inventory(inv, bucket)
 
         elif 'bucket'in inv and 'material' not in inv:
             print('pole baweły jest na zachodzie')
@@ -315,7 +315,7 @@ def map3_action(char_alloved, board, x, y):
             del inv['material']
             del inv['bucket']
             robe = ['robe']
-            inv = add_to_inventory(inv, robe)
+            add_to_inventory(inv, robe)
             add_to_stats(stats, 0, 10, 0, 2, 80, 0)
 
         elif 'robe' in inv:
