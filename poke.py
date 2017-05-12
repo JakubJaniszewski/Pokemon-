@@ -431,7 +431,7 @@ def map4_action(char_alloved, board, x, y):
             print('enemy is beaten \n plus 75XP')
             sleep(0.5)
             bandit_head = ['bandit head']
-            add_to_inventory(inv, bandit_head)
+            change_files.add_to_inventory(inv, bandit_head)
             print('+1 bandit head')
             sleep(0.25)
         x, y = back(button, x, y)
