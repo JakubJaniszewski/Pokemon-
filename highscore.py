@@ -40,15 +40,21 @@ def print_top_10(list_of_scores):
     list_of_scores = sorted(list_of_scores, key=lambda x: int(x[1]), reverse=True)
 
     print("\nName | Exp | Date:")
+    count = 1
+
     if len(list_of_scores) >= 10:
         for index in range(0, 10):
             for element in list_of_scores[index]:
+                print(("#" + str(count)), end=" ")
                 print(element, end=" | ")
+            count += 1
             print("")
     else:
         for index in range(len(list_of_scores)):
             for element in list_of_scores[index]:
+                print(("#" + str(count)), end=" ")
                 print(element, end=" | ")
+            count += 1
             print("")
 
 
