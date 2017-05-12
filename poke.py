@@ -169,7 +169,7 @@ def map1_action(char_alloved, board, x, y):
 
     if board[y][x] == '♺':
         if 'pickaxe' not in inv:
-            print('need pickaxe')
+            print('You need a pickaxe to gather this.')
             sleep(0.5)
 
         elif 'pickaxe' in inv or 'sword' in inv:
@@ -184,7 +184,7 @@ def map1_action(char_alloved, board, x, y):
         x, y = back(button, x, y)
 
         if 'pickaxe' not in inv and 'sword' not in inv:
-            print('I have a quest for you \n i need 5 iron ores')
+            print('Hello traveler! I am blacksmith John. Our bridge has been ruined by vandals few days ago. If you won to go further, you have to bring to me some iron ore. With this I can repair the bridge for you!')
             sleep(1)
             pickaxe = ['pickaxe']
             print("+1 pickaxe")
@@ -192,15 +192,15 @@ def map1_action(char_alloved, board, x, y):
             change_files.add_to_inventory(inv, pickaxe)
 
         elif 'pickaxe'in inv and 'iron ore' not in inv:
-            print('go hurry!')
+            print('Please, hurry up!')
             sleep(0.5)
 
         elif 'pickaxe'in inv and inv['iron ore'] < 5:
-            print('you need 5!')
+            print('I need 5 ores!')
             sleep(0.5)
 
         elif 'pickaxe' in inv and inv['iron ore'] == 5:
-            print('good job')
+            print('Thank  you for your help! Please, take this sword as a reward. Now I can repair the bridge!')
             del inv['iron ore']
             del inv['pickaxe']
             sword = ['sword']
@@ -208,22 +208,22 @@ def map1_action(char_alloved, board, x, y):
             change_files.add_to_stats(stats, 0, 0, 2, 0, 40, 0)
 
         elif 'sword' in inv:
-            print('good luck')
+            print('I wish you good luck!')
             sleep(0.5)
 
     if board[y][x] == ',':
-        print('no more ore here')
+        print('You have already gathered ore from this one.')
         sleep(0.5)
 
     if board[y][x] == '(' or board[y][x] == ')':
         stats['Health'] = stats['Max health']
         change_files.add_to_stats(stats, 0, 0, 0, 0, 0, 0)
-        print('Full heal')
+        print('Health is back')
         sleep(0.2)
 
     if board[y][x] == '&':
         x, y = back(button, x, y)
-        print('w ktróleswie znajdują się lecznicze źródła \n jedno z nich jest za mną, sprawdz sam')
+        print('In our kingdom, we have special hot springs, which can heal you! One of these is behind me, check this out!')
         sleep(1)
 
     if 'sword' in inv:
@@ -240,7 +240,7 @@ def map2_action(char_alloved, board, x, y):
     change_files.level_up(stats['Exp'], stats['Level'])
 
     if board[y][x] == char_alloved[11]:
-        print('stój kurwa')
+        print('Stay there, kurwa!')
         sleep(0.5)
         enemy_health = fight.fight(25, 25, 5, 5, 25, x, y)
         if enemy_health <= 0:
@@ -251,10 +251,10 @@ def map2_action(char_alloved, board, x, y):
         x, y = back(button, x, y)
         board_change('maps/map2.txt', x, y)
 
-    if board[y][x] == char_alloved[11]:
+    if board[y][x] == 'x':
         x, y = back(button, x, y)
         board_change('maps/map2.txt', x, y)
-        print('przepraszam, tylko nie bij')
+        print('Im sorry, dont kill me!')
         sleep(0.5)
 
     if board[y][x] == '⚗':
@@ -266,13 +266,13 @@ def map2_action(char_alloved, board, x, y):
     if board[y][x] == char_alloved[13] or board[y][x] == char_alloved[14]:
         stats['Health'] = stats['Max health']
         change_files.add_to_stats(stats, 0, 0, 0, 0, 0, 0)
-        print('Full heal')
+        print('Health is back')
         sleep(0.2)
 
     if board[y][x] == '&':
         x, y = back(button, x, y)
         board_change('maps/map2.txt', x, y)
-        print('muszę się napić czegoś mocnieszego')
+        print('I have to drink...')
         sleep(0.5)
 
     if board[y][x] == char_alloved[10]:
@@ -301,21 +301,21 @@ def map3_action(char_alloved, board, x, y):
         board_change('maps/map3.txt', x, y)
 
         if 'bucket' not in inv and 'robe' not in inv:
-            print('I have a quest for you \n i need 5 materials')
+            print('Im a local tailor. If you want me to make something for you, you have to take some materials for me! On the west you can find cotton field. Please bring to me some cotton!')
             sleep(1)
             bucket = ['bucket']
             change_files.add_to_inventory(inv, bucket)
 
         elif 'bucket'in inv and 'material' not in inv:
-            print('pole baweły jest na zachodzie')
+            print('Cotton field is on the west.')
             sleep(0.5)
 
         elif 'bucket'in inv and inv['material'] < 5:
-            print('za mało')
+            print('Its not enough')
             sleep(0.5)
 
         elif 'bucket' in inv and inv['material'] == 5:
-            print('udało ci się')
+            print('You did it!')
             sleep(0.5)
             del inv['material']
             del inv['bucket']
@@ -324,11 +324,11 @@ def map3_action(char_alloved, board, x, y):
             change_files.add_to_stats(stats, 0, 10, 0, 2, 80, 0)
 
         elif 'robe' in inv:
-            print('idz i odzyskaj tron')
+            print('With this robe even those brain-dead knights wont notice you arent from town!')
             sleep(0.5)
 
     if board[y][x] == char_alloved[11]:
-        print('awaj leszczu')
+        print('Come on, little bitch!')
         sleep(0.5)
         enemy_health = fight.fight(50, 50, 10, 10, 50, x, y)
         if enemy_health <= 0:
@@ -342,37 +342,37 @@ def map3_action(char_alloved, board, x, y):
     if board[y][x] == '&':
         x, y = back(button, x, y)
         board_change('maps/map3.txt', x, y)
-        print('nieźle walczysz, wystarczy mi')
+        print('Enough for me...')
         sleep(0.5)
 
     if board[y][x] == '⍑':
         x, y = back(button, x, y)
         board_change('maps/map3.txt', x, y)
-        print('FIGHT CLUB')
+        print('This is FIGHT CLUB. Here you can fight with great oponnents to improve your battling skills!')
         sleep(0.5)
 
     if board[y][x] == '⯂':
         if 'robe' not in inv:
             x, y = back(button, x, y)
             board_change('maps/map3.txt', x, y)
-            print('czego tu szukasz wieśniaku? ... wypierdalaj')
+            print('What are you looking for, beggar? Get the fuck off!')
             sleep(0.5)
         elif 'robe' in inv:
-            print('zapraszam dostojny panie')
+            print('You are welcome, my lord.')
             board[y][x] = " "
             sleep(0.5)
 
     if board[y][x] == char_alloved[13] or board[y][x] == char_alloved[14]:
         stats['Health'] = stats['Max health']
         change_files.add_to_stats(stats, 0, 0, 0, 0, 0, 0)
-        print('Full heal')
+        print('Full health')
         sleep(0.2)
 
     if board[y][x] == 'x':
         if "robe" not in inv:
             x, y = back(button, x, y)
             board_change('maps/map3.txt', x, y)
-            print('czego tu szukasz wieśniaku? ... wypierdalaj')
+            print('What are you looking for, beggar? Get the fuck off!')
             sleep(0.5)
         elif "robe" in inv:
             board[y][x] = " "
@@ -395,23 +395,21 @@ def map4_action(char_alloved, board, x, y):
         board_change('maps/map4.txt', x, y)
 
         if 'coin' not in inv and 'permit' not in inv:
-            print('''Jestem gueratorem i mam glejt \n jeżeli oswobodzisz przedmieścia z rąk
-            bandytów to oddam ci mój glejt \n jako dowód prznieś mi ich głowy \n
-            tu masz trochę monet na zachęte''')
+            print('I dont have time for you now!!! Help my soldiers in rescuing our town from barbarians if u want this stupid conduct pass!')
             sleep(1)
             coin = ['coin']*120
             change_files.add_to_inventory(inv, coin)
 
         elif 'coin'in inv and 'bandit head' not in inv:
-            print('tam giną ludzie, spiesz się')
+            print('They are dying there! Just go!!!')
             sleep(0.5)
 
         elif 'coin'in inv and inv['bandit head'] < 4:
-            print('to nie wszscy, tam wciąż są bandyci')
+            print('This is not all of them yet!')
             sleep(0.5)
 
         elif 'coin' in inv and inv['bandit head'] == 4:
-            print('oswobodziłeś lud, ale glejt będzie cię kosztował 120 monet')
+            print('Thank you for your help. Here is your conduct pass.')
             sleep(1)
             del inv['bandit head']
             del inv['coin']
@@ -420,11 +418,11 @@ def map4_action(char_alloved, board, x, y):
             change_files.add_to_stats(stats, 0, 0, 0, 0, 250, 0)
 
         elif 'permit' in inv:
-            print("Nie mam czasu, żegnaj!")
+            print("I have no time, bye!")
             sleep(0.5)
 
     if board[y][x] == char_alloved[11]:
-        print('zajebie cie!')
+        print('Fuck you!!!')
         sleep(0.5)
         enemy_health = fight.fight(75, 75, 13, 13, 75, x, y)
         if enemy_health <= 0:
@@ -442,29 +440,29 @@ def map4_action(char_alloved, board, x, y):
     if board[y][x] == '&':
         x, y = back(button, x, y)
         board_change('maps/map4.txt', x, y)
-        print('dead body')
+        print('Dead body.')
         sleep(0.5)
 
     if board[y][x] == '⯂':
         if 'permit' not in inv:
             x, y = back(button, x, y)
             board_change('maps/map4.txt', x, y)
-            print('bez okazania glejtu nikt nie przejdziesz')
+            print('You need conduct pass to meet the king.')
             sleep(0.5)
         elif 'permit' in inv:
             board[y][x] = " "
-            print('król czeka')
+            print('King is waiting for you, my lord. Better hurry.')
             sleep(0.5)
 
     if board[y][x] == 'x':
         if "permit" not in inv:
             x, y = back(button, x, y)
             board_change('maps/map4.txt', x, y)
-            print('bez okazania glejtu nikt nie przejdziesz')
+            print('You need conduct pass to meet the king.')
             sleep(0.5)
         elif "permit" in inv:
             board[y][x] = " "
-            print('król czeka')
+            print('King is waiting for you, my lord. Better hurry.')
             sleep(0.5)
 
     if board[y][x] == char_alloved[13] or board[y][x] == char_alloved[14]:
