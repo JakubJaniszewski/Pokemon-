@@ -75,10 +75,13 @@ def set_clues(number_to_guess, guess):
 
 
 def display_file(filename):
+    yellow = "\033[0;33m"
+    off = "\033[0;0m"
+
     os.system("clear")
     with open(filename, "r") as f:
         screen = f.read()
-        print(screen)
+        print(yellow + screen + off)
 
 
 def main():
