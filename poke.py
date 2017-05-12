@@ -1,78 +1,51 @@
-from random import randint
-from time import sleep
-import csv
-import os
-import operator
-import random
-import hot_and_cold
+try:
+    from time import sleep
+    import os
+    import random
+    import hot_and_cold
+    import beggining_of_the_game
+    import change_files
+    import print_functions
+    import fight
+    import getch
+
+except ImportError:
+    print("Ooops! Can't connect to the internet!")
+    quit()
 
 
 def create_board(board_name):
     with open(board_name, "r") as maps:
         maps = maps.readlines()
-        for y in range(len(maps)):
-            maps[y] = list(maps[y])
+        for i in range(len(maps)):
+            maps[i] = list(maps[i])
     return maps
 
 
 def print_board(board):
+    board = beggining_of_the_game.set_color(board)
     for row in board:
         for char in row:
             print(char, end='')
 
 
-def insert_player(board, width, height):
-    with open("chosen_character.csv", "r") as f:
-        f = f.read()
-        chosen_character = f.split(",")
-        chosen_character[-1] = chosen_character[-1].replace("\n", "")
-
-    character = chosen_character[0]
-    color = chosen_character[1]
-    color = change_color(color)
-    off = "\033[0;0m"
-
-    board[height][width] = color + character + off
-    return board
-
-
-def change_color(color):
-    if color == "yellow":
-        color = "\033[1;33m"
-    if color == "blue":
-        color = "\033[1;34m"
-    if color == "red":
-        color = "\033[1;31m"
-    if color == "green":
-        color = "\033[0;32m"
-    if color == "white":
-        color = "\033[0;0m"
-    return color
-
-
 def board_change(board_name, x, y):
     os.system("clear")
     board = create_board(board_name)
-    board_with_player = insert_player(board, x, y)
+    board_with_player = print_functions.insert_player(board, x, y)
     print_board(board_with_player)
-
-
-def window(window_name):
-    os.system("clear")
-    board = create_board(window_name)
-    print_board(board)
 
 
 def main():
     os.system("clear")
-    welcome_screen()
-    character_creation()
+    beggining_of_the_game.welcome_screen()
+    beggining_of_the_game.character_creation()
     gameplay()
 
 
 def gameplay():
-    char_alloved = [' ', 'O', '%', '★', '♺', '⚗', ',', '⤩', '&', '#', '~', '⍑','(',')','⯂','x', "♕"]
-    reset_files()
+    char_alloved = get_allowed_char()
+    change_files.reset_files()
     x, y = first_level(char_alloved)
     second_level(char_alloved, x, y)
     third_level(char_alloved)
@@ -80,11 +53,21 @@ def gameplay():
     fifth_level(char_alloved)
 
 
-def reset_files():
-    inv = {'wooden stick': 1, 'sword': 1, 'robe': 1, 'permit': 1}
-    export_file(inv, 'test_inventory.csv')
-    stats = {"Health": 40, "Max health": 40, "Strength": 10, "Agility": 10, "Exp": 0, "Level": 1}
-    export_file(stats, 'stats.csv')
+def get_allowed_char():
+    red = "\033[1;31m"
+    green = "\033[0;32m"
+    yellow = "\033[0;33m"
+    cyan = "\033[1;36m"
+    off = "\033[0;0m"
+
+    allowed_char = [' ', 'O', '♺', '⚗', ',', '&', '~', '⍑', '⯂', 'x',
+                    yellow + '★' + off,
+                    red + '⤩' + off,
+                    green + '#' + off,
+                    cyan + "(" + off,
+                    cyan + ")" + off,
+                    yellow + "♕" + off]
+    return allowed_char
 
 
 def first_level(char_alloved):
@@ -131,13 +114,13 @@ def fifth_level(char_alloved):
 def new_board(board_name, x, y):
     os.system("clear")
     board = create_board(board_name)
-    board_with_player = insert_player(board, x, y)
+    board_with_player = print_functions.insert_player(board, x, y)
     print_board(board_with_player)
     return board, x, y
 
 
 def get_action(char_alloved, board, x, y, map_file):
-    button = getch()
+    button = getch.getch()
     if button == 'w':
         y = y - 1
         if board[y][x] not in char_alloved:
@@ -163,11 +146,11 @@ def get_action(char_alloved, board, x, y, map_file):
         move(x, y, map_file)
 
     elif button == 'i':
-        inv = import_inventory('test_inventory.csv')
-        stats = import_stats('stats.csv')
-        display_stats(stats)
-        print_table(inv, order=None)
-        while getch().lower() != 'i':
+        inv = change_files.import_inventory('test_inventory.csv')
+        stats = change_files.import_stats('stats.csv')
+        print_functions.display_stats(stats)
+        print_functions.print_table(inv, order=None)
+        while (getch.getch()).lower() != 'i':
             sleep(0.1)
         board_change(map_file, x, y)
 
@@ -180,19 +163,20 @@ def get_action(char_alloved, board, x, y, map_file):
 def map1_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map1.txt")
-    inv = import_inventory('test_inventory.csv')
-    stats = import_stats('stats.csv')
-    level_up(stats['Exp'], stats['Level'])
-
-
+    inv = change_files.import_inventory('test_inventory.csv')
+    stats = change_files.import_stats('stats.csv')
+    change_files.level_up(stats['Exp'], stats['Level'])
 
     if board[y][x] == '♺':
         if 'pickaxe' not in inv:
             print('need pickaxe')
+            sleep(0.5)
 
         elif 'pickaxe' in inv or 'sword' in inv:
             iron_ore = ['iron ore']
-            add_to_inventory(inv, iron_ore)
+            change_files.add_to_inventory(inv, iron_ore)
+            print('+1 iron ore')
+            sleep(0.5)
             board[y][x] = ','
 
     # smith quest
@@ -203,43 +187,44 @@ def map1_action(char_alloved, board, x, y):
             print('I have a quest for you \n i need 5 iron ores')
             sleep(1)
             pickaxe = ['pickaxe']
-            add_to_inventory(inv, pickaxe)
+            print("+1 pickaxe")
+            sleep(0.5)
+            change_files.add_to_inventory(inv, pickaxe)
 
         elif 'pickaxe'in inv and 'iron ore' not in inv:
             print('go hurry!')
+            sleep(0.5)
 
         elif 'pickaxe'in inv and inv['iron ore'] < 5:
             print('you need 5!')
+            sleep(0.5)
 
         elif 'pickaxe' in inv and inv['iron ore'] == 5:
             print('good job')
             del inv['iron ore']
             del inv['pickaxe']
             sword = ['sword']
-            add_to_inventory(inv, sword)
-            add_to_stats(stats, 0, 0, 2, 0, 40, 0)
+            change_files.add_to_inventory(inv, sword)
+            change_files.add_to_stats(stats, 0, 0, 2, 0, 40, 0)
 
         elif 'sword' in inv:
             print('good luck')
+            sleep(0.5)
 
     if board[y][x] == ',':
         print('no more ore here')
-
-    if board[y][x] == '⤩':
-        x, y = back(button, x, y)
-        fight(85, 85, 15, 15, 20, x, y)
-        board_change('maps/map1.txt', x, y)
-        print('enemy is dead \n plus 20XP')
+        sleep(0.5)
 
     if board[y][x] == '(' or board[y][x] == ')':
         stats['Health'] = stats['Max health']
-        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
+        change_files.add_to_stats(stats, 0, 0, 0, 0, 0, 0)
         print('Full heal')
         sleep(0.2)
 
     if board[y][x] == '&':
         x, y = back(button, x, y)
         print('w ktróleswie znajdują się lecznicze źródła \n jedno z nich jest za mną, sprawdz sam')
+        sleep(1)
 
     if 'sword' in inv:
         return 2, x, y
@@ -250,30 +235,47 @@ def map1_action(char_alloved, board, x, y):
 def map2_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map2.txt")
-    inv = import_inventory('test_inventory.csv')
-    stats = import_stats('stats.csv')
-    level_up(stats['Exp'], stats['Level'])
+    inv = change_files.import_inventory('test_inventory.csv')
+    stats = change_files.import_stats('stats.csv')
+    change_files.level_up(stats['Exp'], stats['Level'])
 
-    if board[y][x] == '⤩':
+    if board[y][x] == char_alloved[11]:
+        print('stój kurwa')
+        sleep(0.5)
+        enemy_health = fight.fight(25, 25, 5, 5, 25, x, y)
+        if enemy_health <= 0:
+            board[y][x] = 'x'
+            board_change('maps/map2.txt', x, y)
+            print('enemy is beaten \n plus 75XP')
+            sleep(0.5)
         x, y = back(button, x, y)
-        print('stój kurwa!')
-        sleep(1)
-        fight(25, 25, 5, 5, 20, x, y)
         board_change('maps/map2.txt', x, y)
-        print('enemy is dead \n plus 20XP')
+
+    if board[y][x] == char_alloved[11]:
+        x, y = back(button, x, y)
+        board_change('maps/map2.txt', x, y)
+        print('przepraszam, tylko nie bij')
+        sleep(0.5)
 
     if board[y][x] == '⚗':
         x, y = back(button, x, y)
         board_change('maps/map2.txt', x, y)
         print('good luck')
+        sleep(0.5)
 
-    if board[y][x] == '(' or board[y][x] == ')':
+    if board[y][x] == char_alloved[13] or board[y][x] == char_alloved[14]:
         stats['Health'] = stats['Max health']
-        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
+        change_files.add_to_stats(stats, 0, 0, 0, 0, 0, 0)
         print('Full heal')
         sleep(0.2)
 
-    if board[y][x] == "★":
+    if board[y][x] == '&':
+        x, y = back(button, x, y)
+        board_change('maps/map2.txt', x, y)
+        print('muszę się napić czegoś mocnieszego')
+        sleep(0.5)
+
+    if board[y][x] == char_alloved[10]:
         return 3, x, y
     else:
         return 2, x, y
@@ -282,16 +284,16 @@ def map2_action(char_alloved, board, x, y):
 def map3_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map3.txt")
-    inv = import_inventory('test_inventory.csv')
-    stats = import_stats('stats.csv')
-    level_up(stats['Exp'], stats['Level'])
-
+    inv = change_files.import_inventory('test_inventory.csv')
+    stats = change_files.import_stats('stats.csv')
+    change_files.level_up(stats['Exp'], stats['Level'])
 
     if board[y][x] == '~':
         if 'bucket' in inv:
             material = ['material']
-            add_to_inventory(inv, material)
+            change_files.add_to_inventory(inv, material)
             print('+1 material')
+            sleep(0.5)
             board[y][x] = ','
 
     if board[y][x] == '⚗':
@@ -302,38 +304,52 @@ def map3_action(char_alloved, board, x, y):
             print('I have a quest for you \n i need 5 materials')
             sleep(1)
             bucket = ['bucket']
-            add_to_inventory(inv, bucket)
+            change_files.add_to_inventory(inv, bucket)
 
         elif 'bucket'in inv and 'material' not in inv:
             print('pole baweły jest na zachodzie')
+            sleep(0.5)
 
         elif 'bucket'in inv and inv['material'] < 5:
             print('za mało')
+            sleep(0.5)
 
         elif 'bucket' in inv and inv['material'] == 5:
             print('udało ci się')
+            sleep(0.5)
             del inv['material']
             del inv['bucket']
             robe = ['robe']
-            add_to_inventory(inv, robe)
-            add_to_stats(stats, 0, 10, 0, 2, 80, 0)
+            change_files.add_to_inventory(inv, robe)
+            change_files.add_to_stats(stats, 0, 10, 0, 2, 80, 0)
 
         elif 'robe' in inv:
             print('idz i odzyskaj tron')
+            sleep(0.5)
 
-    if board[y][x] == '⤩':
+    if board[y][x] == char_alloved[11]:
+        print('awaj leszczu')
+        sleep(0.5)
+        enemy_health = fight.fight(50, 50, 10, 10, 50, x, y)
+        if enemy_health <= 0:
+            board[y][x] = '&'
+            board_change('maps/map3.txt', x, y)
+            print('enemy is beaten \n plus 75XP')
+            sleep(0.5)
         x, y = back(button, x, y)
         board_change('maps/map3.txt', x, y)
-        print ('dawaj leszczu')
-        sleep(1)
-        fight(50, 50, 10, 10, 40, x, y)
+
+    if board[y][x] == '&':
+        x, y = back(button, x, y)
         board_change('maps/map3.txt', x, y)
-        print('enemy is dead \n plus 40XP')
+        print('nieźle walczysz, wystarczy mi')
+        sleep(0.5)
 
     if board[y][x] == '⍑':
         x, y = back(button, x, y)
         board_change('maps/map3.txt', x, y)
         print('FIGHT CLUB')
+        sleep(0.5)
 
     if board[y][x] == '⯂':
         if 'robe' not in inv:
@@ -346,6 +362,12 @@ def map3_action(char_alloved, board, x, y):
             board[y][x] = " "
             sleep(0.5)
 
+    if board[y][x] == char_alloved[13] or board[y][x] == char_alloved[14]:
+        stats['Health'] = stats['Max health']
+        change_files.add_to_stats(stats, 0, 0, 0, 0, 0, 0)
+        print('Full heal')
+        sleep(0.2)
+
     if board[y][x] == 'x':
         if "robe" not in inv:
             x, y = back(button, x, y)
@@ -355,14 +377,7 @@ def map3_action(char_alloved, board, x, y):
         elif "robe" in inv:
             board[y][x] = " "
 
-    if board[y][x] == '(' or board[y][x] == ')':
-        stats['Health'] = stats['Max health']
-        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
-        print('Full heal')
-        sleep(0.2)
-
-
-    if board[y][x] == "★":
+    if board[y][x] == char_alloved[10]:
         return 4, x, y
     else:
         return 3, x, y
@@ -371,9 +386,9 @@ def map3_action(char_alloved, board, x, y):
 def map4_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map4.txt")
-    inv = import_inventory('test_inventory.csv')
-    stats = import_stats('stats.csv')
-    level_up(stats['Exp'], stats['Level'])
+    inv = change_files.import_inventory('test_inventory.csv')
+    stats = change_files.import_stats('stats.csv')
+    change_files.level_up(stats['Exp'], stats['Level'])
 
     if board[y][x] == '⚗':
         x, y = back(button, x, y)
@@ -385,43 +400,46 @@ def map4_action(char_alloved, board, x, y):
             tu masz trochę monet na zachęte''')
             sleep(1)
             coin = ['coin']*120
-            add_to_inventory(inv, coin)
+            change_files.add_to_inventory(inv, coin)
 
         elif 'coin'in inv and 'bandit head' not in inv:
             print('tam giną ludzie, spiesz się')
+            sleep(0.5)
 
-        elif 'coin'in inv and inv['bandit head'] < 6:
+        elif 'coin'in inv and inv['bandit head'] < 4:
             print('to nie wszscy, tam wciąż są bandyci')
+            sleep(0.5)
 
-        elif 'coin' in inv and inv['bandit head'] == 6:
+        elif 'coin' in inv and inv['bandit head'] == 4:
             print('oswobodziłeś lud, ale glejt będzie cię kosztował 120 monet')
+            sleep(1)
             del inv['bandit head']
             del inv['coin']
             permit = ['permit']
-            add_to_inventory(inv, permit)
-            add_to_stats(stats, 0, 0, 0, 0, 250, 0)
+            change_files.add_to_inventory(inv, permit)
+            change_files.add_to_stats(stats, 0, 0, 0, 0, 250, 0)
 
-    if board[y][x] == '⤩':
-        if 'coin' in inv:
-            x, y = back(button, x, y)
+        elif 'permit' in inv:
+            print("Nie mam czasu, żegnaj!")
+            sleep(0.5)
+
+    if board[y][x] == char_alloved[11]:
+        print('zajebie cie!')
+        sleep(0.5)
+        enemy_health = fight.fight(75, 75, 13, 13, 75, x, y)
+        if enemy_health <= 0:
+            board[y][x] = '&'
             board_change('maps/map4.txt', x, y)
-            print ('zajebie cie!!')
-            sleep(1)
+            print('enemy is beaten \n plus 75XP')
+            sleep(0.5)
+            bandit_head = ['bandit head']
+            add_to_inventory(inv, bandit_head)
+            print('+1 bandit head')
+            sleep(0.25)
+        x, y = back(button, x, y)
+        board_change('maps/map4.txt', x, y)
 
-            exp_before = stats['Exp']
-            fight(80, 80, 15, 15, 75, x, y)
-            board_change('maps/map4.txt', x, y)
-            exp_after = stats['Exp']
-
-            if exp_before - exp_after != 0:
-                print('enemy is dead \n plus 75XP')
-                bandit_head = ['bandit hea']
-                add_to_inventory(inv, bandit_head)
-                print('+1 bandit_head')
-                sleep(0.5)
-                board[y][x] = ','
-
-    if board[y][x] == ',':
+    if board[y][x] == '&':
         x, y = back(button, x, y)
         board_change('maps/map4.txt', x, y)
         print('dead body')
@@ -449,13 +467,13 @@ def map4_action(char_alloved, board, x, y):
             print('król czeka')
             sleep(0.5)
 
-    if board[y][x] == '(' or board[y][x] == ')':
+    if board[y][x] == char_alloved[13] or board[y][x] == char_alloved[14]:
         stats['Health'] = stats['Max health']
-        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
+        change_files.add_to_stats(stats, 0, 0, 0, 0, 0, 0)
         print('Full heal')
         sleep(0.2)
 
-    if board[y][x] == "★":
+    if board[y][x] == char_alloved[10]:
         return 5, x, y
     else:
         return 4, x, y
@@ -465,94 +483,16 @@ def map5_action(char_alloved, board, x, y):
     print(x, y)
     board, x, y, button = get_action(char_alloved, board, x, y, "maps/map5.txt")
 
-    if board[y][x] == "♕":
+    if board[y][x] == char_alloved[15]:
         hot_and_cold.main()
-    if board[y][x] == "★":
         return 6, x, y
     else:
         return 5, x, y
 
 
-def level_up(exp, level):
-    stats = import_stats('stats.csv')
-    if level == 1:
-        if exp >= 100:
-            add_to_stats(stats, 0, 10, 4, 4, 0, 1)
-    elif level == 2:
-        if exp >= 250:
-            add_to_stats(stats, 0, 15, 6, 6, 0, 1)
-    elif level == 3:
-        if exp >= 500:
-            add_to_stats(stats, 0, 20, 8, 8, 0, 1)
-    elif level == 4:
-        if exp >= 1000:
-            add_to_stats(stats, 0, 25, 10, 10, 0, 1)
-
-
-def fight(health, max_health, strength, agility, exp, x, y):
-    window('action.txt')
-    stats = import_stats('stats.csv')
-    display_health(stats['Health'], stats['Max health'])
-
-    enemy_attack_strength = int(strength * 0.5)
-    enemy_attack_random = [enemy_attack_strength - 1, enemy_attack_strength, enemy_attack_strength + 1]
-    enemy_dodge_chance = agility * 2
-
-    player_attack_strength = int(stats['Strength'] * 0.5)
-    player_attack_random = [player_attack_strength - 1, player_attack_strength, player_attack_strength + 1]
-    plaer_dodge_chance = int(stats['Agility'] * 0.5)
-
-    while health > 0:
-        window('action.txt')
-        print('Player :', end='-')
-        display_health(stats['Health'], stats['Max health'])
-        print('Enemy :', end='--')
-        display_health(health, max_health)
-
-        choice = input('1 : Attac | 2: Run \n')
-        while not (choice == '1' or choice == '2'):
-            window('action.txt')
-            print('Player :', end='-')
-            display_health(stats['Health'], stats['Max health'])
-            print('Enemy :', end='--')
-            display_health(health, max_health)
-            choice = input('1 : Attac | 2: Run \n')
-
-        if choice == '2':
-            board_change('maps/map1.txt', x, y)
-            break
-
-        if choice == '1':
-            dodge = randint(0, 99)
-            print(dodge)
-            sleep(0.5)
-            if dodge <= enemy_dodge_chance:
-                print('you miss')
-                sleep(0.5)
-            else:
-                health = health - random.choice(player_attack_random)
-
-            dodge = randint(0, 99)
-            if dodge <= plaer_dodge_chance:
-                print('dodge')
-                sleep(0.5)
-            else:
-                stats['Health'] = stats['Health'] - random.choice(enemy_attack_random)
-
-            if stats['Health'] <= 0:
-                window('screens/Lose.txt')
-                sleep(1.5)
-                quit()
-
-    if health <= 0:
-        add_to_stats(stats, 0, 0, 0, 0, exp, 0)
-    else:
-        add_to_stats(stats, 0, 0, 0, 0, 0, 0)
-
-
 def move(x, y, board_name="maps/map1.txt"):
     board = create_board(board_name)
-    board_with_player = insert_player(board, x, y)
+    board_with_player = print_functions.insert_player(board, x, y)
     os.system("clear")
     print_board(board_with_player)
     sleep(0.1)
@@ -569,217 +509,6 @@ def back(button, x, y):
         x = x - 1
     move(x, y)
     return x, y
-
-####### INVENTORY #################
-
-
-def add_to_inventory(inventory, added_items):
-    keys = []
-    for key, value in sorted(inventory.items()):
-        keys.append(key)
-    for item in added_items:
-        for key, value in sorted(inventory.items()):
-            if item == key:
-                inventory[key] = value + 1
-            elif item not in keys:
-                inventory[item] = 1
-                keys.append(item)
-    export_file(inventory, 'test_inventory.csv')
-
-
-def add_to_stats(stat, health, max_health, strength, agility, exp, level):
-    stat['Health'] += health
-    stat['Max health'] += max_health
-    stat['Strength'] += strength
-    stat['Agility'] += agility
-    stat['Exp'] += exp
-    stat['Level'] += level
-    export_file(stat, 'stats.csv')
-
-
-def export_file(inventory, filename="export_inventory.csv"):
-    item_list = []
-
-    for key, value in sorted(inventory.items()):
-        for i in range(value):
-            item_list.append(key)
-
-    with open(filename, 'w', newline='') as f:
-        writer = csv.writer(f, delimiter=",", quotechar=",", quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(item_list)
-
-
-def import_inventory(filename="import_inventory.csv"):
-    inventory = {"wooden stick": 1, 'sword': 1, 'robe': 1, 'permit': 1}
-
-    with open(filename, newline='') as csvfile:
-        inv_csv = csv.reader(csvfile, delimiter=',',
-                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row in inv_csv:
-            file_list = row
-
-        for item in file_list:
-            if item not in inventory:
-                value = file_list.count(item)
-                inventory[item] = value
-                file_list = [count for count in file_list if count != item]
-
-    return inventory
-
-
-def import_stats(filename="stats.csv"):
-    stats = {"Health": 40, "Max health": 40, "Strength": 10, "Agility": 10, "Exp": 0, "Level": 1}
-
-    with open(filename, newline='') as csvfile:
-        inv_csv = csv.reader(csvfile, delimiter=',',
-                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for row in inv_csv:
-            file_list = row
-
-        for item in file_list:
-            value = file_list.count(item)
-            stats[item] = value
-
-    return stats
-
-
-def print_table(inventory, order=None):
-    sum = 0
-    keys = []
-    values = []
-
-    for key, value in sorted(inventory.items()):
-        keys.append(key)
-        values.append(str(value))
-    longest_key = (max(keys, key=len))
-    longest_key_len = len(longest_key)
-    longest_value = (max(values, key=len))
-    longest_value_len = len(longest_value)
-
-    print('Inventory:')
-    print('  count    ' + ' ' * (longest_key_len - 9) + 'item name')
-    print('-' * 11 + '-' * longest_key_len)
-
-    for key, value in sorted(inventory.items(), key=operator.itemgetter(1), reverse=True):
-        sum += value
-        print(' ' * (7 - len(str(value))) + str(value) + ' ' * 4 + ' ' * (longest_key_len - len(key)) + key)
-    print('-' * 11 + '-' * longest_key_len)
-    print('Total number of items: ' + str(sum))
-
-
-def display_stats(stat):
-    print('Health :', stat['Health'], '/', stat['Max health'], end=' | ')
-    print('Strength :', stat['Strength'], ' | ', 'Agility :',
-          stat['Agility'], ' | ', 'Exp :', stat['Exp'], ' | ', 'Level :', stat['Level'])
-    print('\n')
-
-
-def display_health(health, max_health):
-    print('Health :', health, '/', max_health)
-
-
-def display_screen(filename):
-    os.system("clear")
-    with open(filename, "r") as f:
-        screen = f.read()
-    print(screen)
-
-
-def welcome_screen():
-    button = ""
-    while not button == "s":
-        display_screen("screens/Welcome.txt")
-        button = getch()
-        if button == "h":
-            help_screen()
-        if button == "c":
-            credits_screen()
-        if button == "x":
-            os.system("clear")
-            quit()
-
-
-def credits_screen():
-    button = ""
-    while not button == "x":
-        display_screen("screens/Credits.txt")
-        button = getch()
-
-
-def help_screen():
-    button = ""
-    while not button == "x":
-        display_screen("screens/Help.txt")
-        button = getch()
-
-
-def character_creation():
-    button = ""
-    allowed_to_press = ["1", "2", "3", "4", "5"]
-    while button not in allowed_to_press:
-        display_screen("screens/Character_creation1.txt")
-        button = getch()
-
-    character = get_character(button)
-    button = ""
-
-    while button not in allowed_to_press:
-        display_screen("screens/Character_creation2.txt")
-        button = getch()
-
-    color = get_color(button)
-
-    choices_list = [character, color]
-    with open("chosen_character.csv", 'w', newline='') as f:
-        writer = csv.writer(f, delimiter=",", quotechar=",", quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(choices_list)
-
-
-
-def get_character(button):
-    if button == "1":
-        character = "@"
-    if button == "2":
-        character = "⛹"
-    if button == "3":
-        character = "§"
-    if button == "4":
-        character = "ᾥ"
-    if button == "5":
-        character = "⛄"
-
-    return character
-
-
-def get_color(button):
-    if button == "1":
-        color = "blue"
-    if button == "2":
-        color = "yellow"
-    if button == "3":
-        color = "green"
-    if button == "4":
-        color = "red"
-    if button == "5":
-        color = "white"
-
-    return color
-
-##########################################
-
-
-def getch():
-    import sys
-    import tty
-    import termios
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-        tty.setraw(sys.stdin.fileno())
-        ch = sys.stdin.read(1)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return ch
 
 
 if __name__ == "__main__":
